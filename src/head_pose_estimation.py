@@ -8,7 +8,7 @@ from openvino.inference_engine import IENetwork, IECore
 import cv2
 
 
-class Face_Model:
+class Head_Pose_Model:
     '''
     Class for the Face Detection Model.
     '''
