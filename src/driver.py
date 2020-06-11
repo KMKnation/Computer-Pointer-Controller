@@ -4,6 +4,11 @@ import logging
 from input_feeder import InputFeeder
 import constants
 import os
+from face_detection import Face_Model
+from facial_landmarks_detection import Landmark_Model
+from gaze_estimation import Gaze_Estimation_Model
+from head_pose_estimation import Head_Pose_Model
+from mouse_controller import MouseController
 
 
 def build_argparser():
@@ -62,3 +67,19 @@ if __name__ == '__main__':
         feeder = InputFeeder(args.input_type, args.input)
     elif args.input_type == constants.WEBCAM:
         feeder = InputFeeder(args.input_type)
+
+    mc = MouseController("medium", "fast")
+
+    face_model = Face_Model(args.face, args.device, args.cpu_extension)
+    landmark_model = Landmark_Model(args.face, args.device, args.cpu_extension)
+    gaze_model = Gaze_Estimation_Model(args.face, args.device, args.cpu_extension)
+    head_model = Head_Pose_Model(args.face, args.device, args.cpu_extension)
+
+    face_model.load_model()
+    logger.info("Face Detection Model Loaded...")
+    landmark_model.load_model()
+    logger.info("Landmark Detection Model Loaded...")
+    gaze_model.load_model()
+    logger.info("Gaze Estimation Model Loaded...")
+    head_model.load_model()
+    logger.info("Head Pose Detection Model Loaded...")

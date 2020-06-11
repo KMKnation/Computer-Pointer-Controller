@@ -20,20 +20,21 @@ class Head_Pose_Model:
         self.output = None
         self.exec_network = None
         self.device = None
-
-    def load_model(self, model_xml, device):
-        '''
-        This method is for loading the model to the device specified by the user.
-        If your model requires any Plugins, this is where you can load them.
-        '''
         self.core = IECore()
-        self.network = self.core.read_network(model=str(model_xml),
-                                              weights=str(os.path.splitext(model_xml)[0] + ".bin"))
+
+        self.network = self.core.read_network(model=str(model_name),
+                                              weights=str(os.path.splitext(model_name)[0] + ".bin"))
 
         self.input = next(iter(self.network.inputs))
         self.output = next(iter(self.network.outputs))
 
-        self.exec_network = self.core.load_network(self.network, device)
+
+    def load_model(self):
+        '''
+        This method is for loading the model to the device specified by the user.
+        If your model requires any Plugins, this is where you can load them.
+        '''
+        self.exec_network = self.core.load_network(self.network, self.device)
 
         return self.exec_network
 
