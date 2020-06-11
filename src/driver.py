@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 import logging
 from input_feeder import InputFeeder
 import constants
+import os
 
 
 def build_argparser():
@@ -18,7 +19,7 @@ def build_argparser():
     parser.add_argument("-i", "--input", required=True, type=str,
                         help="Path to video file or enter cam for webcam")
     parser.add_argument("-it", "--input_type", required=True, type=str,
-                        help="Provide the source of video frames. " + constants.VIDEO + " " + constants.WEBCAM + " | " + constants.IP_CAMERA + " | "+constants.IMAGE)
+                        help="Provide the source of video frames. " + constants.VIDEO + " " + constants.WEBCAM + " | " + constants.IP_CAMERA + " | " + constants.IMAGE)
     parser.add_argument("-p", "--previewFlags", required=False, nargs='+',
                         default=[],
                         help="To see the visualization of different model outputs of each frame")
@@ -41,7 +42,23 @@ if __name__ == '__main__':
     args = build_argparser().parse_args()
     logger = logging.getLogger()
 
-    if (args.input_type == constants.VIDEO):
+    feeder = None
+    if args.input_type == constants.VIDEO or args.input_type == constants.IMAGE:
         extension = str(args.input).split('.')[1]
-        if extension == 'mp4':
+        if not extension.lower() in constants.ALLOWED_EXTENSIONS:
+            logger.error('Please provide supported extension.' + str(constants.ALLOWED_EXTENSIONS))
+            exit(1)
 
+        if not os.path.isfile(args.input):
+            logger.error("Unable to find specified video/image file")
+            exit(1)
+
+        feeder = InputFeeder(args.input_type, args.input)
+    elif args.input_type == constants.IP_CAMERA:
+        if not str(args.input).startswith('http://'):
+            logger.error('Please provide ip of server with http://')
+            exit(1)
+
+        feeder = InputFeeder(args.input_type, args.input)
+    elif args.input_type == constants.WEBCAM:
+        feeder = InputFeeder(args.input_type)

@@ -23,7 +23,7 @@ class InputFeeder:
         if input_type=='video' or input_type=='image':
             self.input_file=input_file
         else:
-            self.input_file= 'ip address'
+            self.input_file= input_file
     
     def load_data(self):
         if self.input_type=='video':
