@@ -37,3 +37,4 @@ virtualenv==16.7.9
 wcwidth==0.1.9
 pyyaml
 line_profiler
+imutils

@@ -6,6 +6,7 @@ This has been provided just to give you an idea of how to structure your model c
 import os
 from openvino.inference_engine import IENetwork, IECore
 import cv2
+import numpy as np
 
 
 class Face_Model:
@@ -48,7 +49,18 @@ class Face_Model:
             #     inference_end_time = time.time()
             #     total_inference_time = inference_end_time - inference_start_time
             result = self.exec_network.requests[0].outputs[self.output]
-            self.preprocess_output(result)
+            box = self.preprocess_output(result[0][0])
+
+            if box is None:
+                return None, None
+
+            h = image.shape[0]
+            w = image.shape[1]
+            box = box * np.array([w, h, w, h])
+            box = box.astype(np.int32)
+            x_min, y_min, x_max, y_max = box
+            cropped_face = image[y_min:y_max, x_min:x_max]
+            return cropped_face, box
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -75,4 +87,18 @@ class Face_Model:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        result = self.exec_network.requests[0].outputs[self.output]
+        area = []
+        cords = []
+        for id, label, confidence, x_min, y_min, x_max, y_max in outputs:
+            if confidence > .7:
+                width = x_max - x_min
+                height = y_max - y_min
+                area.append(width * height)
+                cords.append([x_min, y_min, x_max, y_max])
+
+        # get biggest face from detected because whoever is the close to the screen, his/her's face would be big
+
+        if len(area) > 0:
+            return cords[int(np.argmax(area))]
+        else:
+            return None

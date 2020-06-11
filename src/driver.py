@@ -9,7 +9,16 @@ from facial_landmarks_detection import Landmark_Model
 from gaze_estimation import Gaze_Estimation_Model
 from head_pose_estimation import Head_Pose_Model
 from mouse_controller import MouseController
+import cv2
+import imutils
 
+def imshow(windowname, frame, width=None):
+
+    if width == None:
+        width = 400
+
+    frame = imutils.resize(frame, width=width)
+    cv2.imshow(windowname, frame)
 
 def build_argparser():
     parser = ArgumentParser()
@@ -44,15 +53,16 @@ def build_argparser():
 
 
 if __name__ == '__main__':
-    args = build_argparser().parse_args()
+    arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
+    args = build_argparser().parse_args(arg)
     logger = logging.getLogger()
 
     feeder = None
     if args.input_type == constants.VIDEO or args.input_type == constants.IMAGE:
         extension = str(args.input).split('.')[1]
-        if not extension.lower() in constants.ALLOWED_EXTENSIONS:
-            logger.error('Please provide supported extension.' + str(constants.ALLOWED_EXTENSIONS))
-            exit(1)
+        # if not extension.lower() in constants.ALLOWED_EXTENSIONS:
+        #     logger.error('Please provide supported extension.' + str(constants.ALLOWED_EXTENSIONS))
+        #     exit(1)
 
         if not os.path.isfile(args.input):
             logger.error("Unable to find specified video/image file")
@@ -70,12 +80,21 @@ if __name__ == '__main__':
 
     mc = MouseController("medium", "fast")
 
-
+    feeder.load_data()
 
     face_model = Face_Model(args.face, args.device, args.cpu_extension)
+    face_model.check_model()
+
     landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
+    landmark_model.check_model()
+
     gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
+    gaze_model.check_model()
+
     head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
+    head_model.check_model()
+
+
 
     face_model.load_model()
     logger.info("Face Detection Model Loaded...")
@@ -86,3 +105,26 @@ if __name__ == '__main__':
     head_model.load_model()
     logger.info("Head Pose Detection Model Loaded...")
     print('Loaded')
+
+
+    frame_count = 0
+    for ret, frame in feeder.next_batch():
+        if not ret:
+            break
+        frame_count +=1
+
+        # if frame_count % 5 == 0:
+        #     imshow("video", frame)
+        imshow("video", frame)
+
+        crop_face, box = face_model.predict(frame.copy())
+        imshow("face", crop_face, width=100)
+
+        # if cv2.waitKey() == 'q':
+        #     cv2.destroyAllWindows()
+
+        key = cv2.waitKey(60)
+        if key == 27:
+            break
+
+    cv2.destroyAllWindows()

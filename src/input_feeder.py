@@ -41,16 +41,17 @@ class InputFeeder:
         Returns the next image from either a video file or webcam.
         If input_type is 'image', then it returns the same image.
         '''
-        global frame
+        global frame, ret
         while True:
             if self.input_type=='ip=cam':
                 img_arr = np.array(bytearray(urllib.request.urlopen(self.input_file).read()), dtype=np.uint8)
                 frame = cv2.imdecode(img_arr, -1)
+                ret = True
                 # cv2.imshow('IPWebcam', img)
             else:
                 for _ in range(10):
-                    _, frame=self.cap.read()
-            yield frame
+                    ret, frame=self.cap.read()
+            yield ret, frame
 
 
     def close(self):
