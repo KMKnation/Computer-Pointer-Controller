@@ -1,9 +1,14 @@
 # Computer Pointer Controller
 
-*TODO:* Write a short introduction to your project
+As name says, it controls the computer's mouse pointer with eye gaze.
+We have used 4 pre-trained model that is provided by Open Model Zoo.
+The project's main aim is to check usage of OpenVino ToolKit on different hardware
+which includes openvino inference API, OpenVino WorkBench and VTune Profiler.
 
 ## Project Set Up and Installation
-*TODO:* Explain the setup procedures to run your project. For instance, this can include your project directory structure, the models you need to download and where to place them etc. Also include details about how to install the dependencies your project requires.
+Just execute <i>runme.sh</i> and you are good to go !!
+
+    ./runme.sh
 
 ## Demo
 *TODO:* Explain how to run a basic demo of your model.
