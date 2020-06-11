@@ -25,10 +25,10 @@ def build_argparser():
                         help="Path to video file or enter cam for webcam")
     parser.add_argument("-it", "--input_type", required=True, type=str,
                         help="Provide the source of video frames. " + constants.VIDEO + " " + constants.WEBCAM + " | " + constants.IP_CAMERA + " | " + constants.IMAGE)
-    parser.add_argument("-p", "--previewFlags", required=False, nargs='+',
+    parser.add_argument("-view", "--previewFlags", required=False, nargs='+',
                         default=[],
                         help="To see the visualization of different model outputs of each frame")
-    parser.add_argument("-l", "--cpu_extension", required=False, type=str,
+    parser.add_argument("-ld", "--cpu_extension", required=False, type=str,
                         default=None,
                         help="linker libraries if have any")
     parser.add_argument("-prob", "--prob_threshold", required=False, type=float,
@@ -70,10 +70,12 @@ if __name__ == '__main__':
 
     mc = MouseController("medium", "fast")
 
+
+
     face_model = Face_Model(args.face, args.device, args.cpu_extension)
-    landmark_model = Landmark_Model(args.face, args.device, args.cpu_extension)
-    gaze_model = Gaze_Estimation_Model(args.face, args.device, args.cpu_extension)
-    head_model = Head_Pose_Model(args.face, args.device, args.cpu_extension)
+    landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
+    gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
+    head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
 
     face_model.load_model()
     logger.info("Face Detection Model Loaded...")
@@ -83,3 +85,4 @@ if __name__ == '__main__':
     logger.info("Gaze Estimation Model Loaded...")
     head_model.load_model()
     logger.info("Head Pose Detection Model Loaded...")
+    print('Loaded')

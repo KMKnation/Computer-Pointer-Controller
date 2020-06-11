@@ -19,7 +19,7 @@ class Head_Pose_Model:
         self.input = None
         self.output = None
         self.exec_network = None
-        self.device = None
+        self.device = device
         self.core = IECore()
 
         self.network = self.core.read_network(model=str(model_name),
