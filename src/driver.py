@@ -118,10 +118,17 @@ if __name__ == '__main__':
         imshow("video", frame)
 
         crop_face, box = face_model.predict(frame.copy())
+
+        if crop_face is None:
+            logger.error("Unable to detect the face.")
+            continue
+
         imshow("face", crop_face, width=100)
 
-        # if cv2.waitKey() == 'q':
-        #     cv2.destroyAllWindows()
+        (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(crop_face.copy(), eye_surrounding_area=10)
+        # imshow("left_eye", left_eye, width=100)
+        # imshow("right_eye", right_eye, width=100)
+
 
         key = cv2.waitKey(60)
         if key == 27:

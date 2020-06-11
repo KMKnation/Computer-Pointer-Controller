@@ -6,6 +6,7 @@ This has been provided just to give you an idea of how to structure your model c
 import os
 from openvino.inference_engine import IENetwork, IECore
 import cv2
+import numpy as np
 
 
 class Landmark_Model:
@@ -28,7 +29,6 @@ class Landmark_Model:
         self.input = next(iter(self.network.inputs))
         self.output = next(iter(self.network.outputs))
 
-
     def load_model(self):
         '''
         This method is for loading the model to the device specified by the user.
@@ -37,7 +37,7 @@ class Landmark_Model:
         self.exec_network = self.core.load_network(self.network, self.device)
         return self.exec_network
 
-    def predict(self, image):
+    def predict(self, image, eye_surrounding_area=10):
         '''
         This method is meant for running predictions on the input image.
         '''
@@ -50,7 +50,42 @@ class Landmark_Model:
             #     inference_end_time = time.time()
             #     total_inference_time = inference_end_time - inference_start_time
             result = self.exec_network.requests[0].outputs[self.output]
-            self.preprocess_output(result)
+            box = self.preprocess_output(result)
+            h, w = image.shape[0:2]
+            # w = image.shape[1]
+            box = box * np.array([w, h, w, h])
+            box = box.astype(np.int32)
+
+            (lefteye_x, lefteye_y, righteye_x, righteye_y) = box
+            # cv2.rectangle(image,(lefteye_x,lefteye_y),(righteye_x,righteye_y),(255,0,0))
+
+            le_xmin = lefteye_x - eye_surrounding_area
+            le_ymin = lefteye_y - eye_surrounding_area
+            le_xmax = lefteye_x + eye_surrounding_area
+            le_ymax = lefteye_y + eye_surrounding_area
+
+            re_xmin = righteye_x - eye_surrounding_area
+            re_ymin = righteye_y - eye_surrounding_area
+            re_xmax = righteye_x + eye_surrounding_area
+            re_ymax = righteye_y + eye_surrounding_area
+
+            thickness = 2
+            radius = 2
+            color = (0, 0, 255)
+            cv2.circle(image, (lefteye_x, lefteye_y), radius, color, thickness)
+            cv2.circle(image, (righteye_x, righteye_y), radius, color, thickness)
+
+            cv2.rectangle(image, (re_xmin, re_ymin), (re_xmax, re_ymax), (255, 0, 0))
+            cv2.rectangle(image, (le_xmin, le_ymin), (le_xmax, le_ymax), (255, 0, 0))
+
+            cv2.imshow("Image", image)
+            cv2.waitKey(2)
+
+            left_eye = image[le_ymin:le_ymax, le_xmin:le_xmax]
+            right_eye = image[re_ymin:re_ymax, re_xmin:re_xmax]
+            eye_coords = [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]]
+
+            return (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -77,4 +112,9 @@ class Landmark_Model:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        result = self.exec_network.requests[0].outputs[self.output]
+        leye_x = outputs[0][0].tolist()[0][0]
+        leye_y = outputs[0][1].tolist()[0][0]
+        reye_x = outputs[0][2].tolist()[0][0]
+        reye_y = outputs[0][3].tolist()[0][0]
+
+        return (leye_x, leye_y, reye_x, reye_y)
