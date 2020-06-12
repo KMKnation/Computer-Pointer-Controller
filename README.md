@@ -26,9 +26,9 @@ Argument|Type|Description
 -ge| Mandatory | Path to .xml file of Gaze Estimation model.
 -i| Mandatory | Path to video file or enter cam for webcam
 -it| Mandatory | Provide the source of video frames.
--debug  | Mandatory | To debug each model's output visually, type the model name with comma seperated after --debug
--ld | Mandatory | linker libraries if have any
--d | Mandatory | Provide the target device: 
+-debug  | Optional | To debug each model's output visually, type the model name with comma seperated after --debug
+-ld | Optional | linker libraries if have any
+-d | Optional | Provide the target device: 
 
 
 ## Benchmarks
