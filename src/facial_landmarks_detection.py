@@ -69,18 +69,6 @@ class Landmark_Model:
             re_xmax = righteye_x + eye_surrounding_area
             re_ymax = righteye_y + eye_surrounding_area
 
-            thickness = 2
-            radius = 2
-            color = (0, 0, 255)
-            cv2.circle(image, (lefteye_x, lefteye_y), radius, color, thickness)
-            cv2.circle(image, (righteye_x, righteye_y), radius, color, thickness)
-
-            cv2.rectangle(image, (re_xmin, re_ymin), (re_xmax, re_ymax), (255, 0, 0))
-            cv2.rectangle(image, (le_xmin, le_ymin), (le_xmax, le_ymax), (255, 0, 0))
-
-            cv2.imshow("Image", image)
-            cv2.waitKey(2)
-
             left_eye = image[le_ymin:le_ymax, le_xmin:le_xmax]
             right_eye = image[re_ymin:re_ymax, re_xmin:re_xmax]
             eye_coords = [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]]

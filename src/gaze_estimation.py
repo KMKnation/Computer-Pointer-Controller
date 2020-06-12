@@ -54,7 +54,7 @@ class Gaze_Estimation_Model:
             #     total_inference_time = inference_end_time - inference_start_time
             result = self.exec_network.requests[0].outputs[self.output]
             cords = self.preprocess_output(result[0], head_position)
-            return result, cords
+            return result[0], cords
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -81,9 +81,14 @@ class Gaze_Estimation_Model:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        angle = head_position[2]
-        cosValue = math.cos(angle * math.pi / 180.0)
-        sinValue = math.sin(angle * math.pi / 180.0)
-        x = output[0] * cosValue * output[1] * sinValue
-        y = output[0] * sinValue * output[1] * cosValue
+
+        roll = head_position[2]
+        gaze_vector = output / cv2.norm(output)
+
+        cosValue = math.cos(roll * math.pi / 180.0)
+        sinValue = math.sin(roll * math.pi / 180.0)
+
+
+        x = gaze_vector[0] * cosValue * gaze_vector[1] * sinValue
+        y = gaze_vector[0] * sinValue * gaze_vector[1] * cosValue
         return (x, y)
