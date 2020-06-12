@@ -42,18 +42,23 @@ Argument|Type|Description
         3. head-pose-estimation-adas-0001
         4. landmarks-regression-retail-0009
 - <b>src</b> folder contains python files of the app
-    + constants.py : All static constansts of the app located here
-    + driver.py : Main driver script to run the app
-    + face_detection.py : Face Detection related inference code
-    + facial_landmarks_detection.py : Landmark Detection related inference code
-    + gaze_estimation.py : Gaze Estimation related inference code
-    + head_pose_estimation.py : Head Pose Estimation related inference code
-    + input_feeder.py : input selection related code
-    + model.py : started code for any pre-trained model
-    + mouse_controller.py : Mouse Control related utilities.
-    + profiling.py : To check performance of script line by line
+    + [constants.py](./src/constants.py) : All static constansts of the app located here
+    + [driver.py](./src/driver.py) : Main driver script to run the app
+    + [face_detection.py](./src/face_detection.py) : Face Detection related inference code
+    + [facial_landmarks_detection.py](./src/facial_landmarks_detection.py) : Landmark Detection related inference code
+    + [gaze_estimation.py](./src/gaze_estimation.py) : Gaze Estimation related inference code
+    + [head_pose_estimation.py](./src/head_pose_estimation.py) : Head Pose Estimation related inference code
+    + [input_feeder.py](./src/input_feeder.py) : input selection related code
+    + [model.py](./src/model.py) : started code for any pre-trained model
+    + [mouse_controller.py](./src/mouse_controller.py) : Mouse Control related utilities.
+    + [profiling.py](./src/profiling.py) : To check performance of script line by line
     
-- <b>bin</b> folder contains the media files
+- <b>.gitignore</b> listing of files that should not be uploaded to GitHub
+- <b>README.md</b> File that you are reading right now.
+- <b>requirements.txt</b> All the dependencies of the project listed here
+- <b>runme.sh</b> one shot execution script that covers all the prerequisites of the project.
+- <b>start_workbench.sh</b> Helper file from intel to start OpenVino Workbench
+
 
 ## Benchmarks
 *TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
