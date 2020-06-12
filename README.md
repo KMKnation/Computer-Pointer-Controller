@@ -16,6 +16,21 @@ Just execute <i>runme.sh</i> and you are good to go !!
 ## Documentation
 *TODO:* Include any documentation that users might need to better understand your project code. For instance, this is a good place to explain the command line arguments that your project supports.
 
+###### Command Line Arguments for Running the app
+
+Argument|Type|Description
+| ------------- | ------------- | -------------
+-f | Mandatory | Path to .xml file of Face Detection model.
+-l | Mandatory | Path to .xml file of Facial Landmark Detection model.
+-hp| Mandatory | Path to .xml file of Head Pose Estimation model.
+-ge| Mandatory | Path to .xml file of Gaze Estimation model.
+-i| Mandatory | Path to video file or enter cam for webcam
+-it| Mandatory | Provide the source of video frames.
+-debug  | Mandatory | To debug each model's output visually, type the model name with comma seperated after --debug
+-ld | Mandatory | linker libraries if have any
+-d | Mandatory | Provide the target device: 
+
+
 ## Benchmarks
 *TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
 

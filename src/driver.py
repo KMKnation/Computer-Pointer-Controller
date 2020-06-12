@@ -35,21 +35,16 @@ def build_argparser():
     parser.add_argument("-i", "--input", required=True, type=str,
                         help="Path to video file or enter cam for webcam")
     parser.add_argument("-it", "--input_type", required=True, type=str,
-                        help="Provide the source of video frames. " + constants.VIDEO + " " + constants.WEBCAM + " | " + constants.IP_CAMERA + " | " + constants.IMAGE)
+                        help="Provide the source of video frames." + constants.VIDEO + " " + constants.WEBCAM + " | " + constants.IP_CAMERA + " | " + constants.IMAGE)
     parser.add_argument("-debug", "--debug", required=False, type=str, nargs='+',
                         default=[],
-                        help="To see the visualization of different model outputs of each frame, type the model name with comma seperated after --debug")
+                        help="To debug each model's output visually, type the model name with comma seperated after --debug")
     parser.add_argument("-ld", "--cpu_extension", required=False, type=str,
                         default=None,
                         help="linker libraries if have any")
-    parser.add_argument("-prob", "--prob_threshold", required=False, type=float,
-                        default=0.6,
-                        help="Probability threshold for model to detect the face accurately from the video frame.")
     parser.add_argument("-d", "--device", type=str, default="CPU",
-                        help="Provide the target device to infer on: "
-                             "CPU, GPU, FPGA or MYRIAD is acceptable. Sample "
-                             "will look for a suitable plugin for device "
-                             "specified (CPU by default)")
+                        help="Provide the target device: "
+                             "CPU, GPU, FPGA or MYRIAD is acceptable.")
 
     return parser
 
