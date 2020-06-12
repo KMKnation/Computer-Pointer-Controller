@@ -28,7 +28,6 @@ class Head_Pose_Model:
         self.input = next(iter(self.network.inputs))
         self.output = next(iter(self.network.outputs))
 
-
     def load_model(self):
         '''
         This method is for loading the model to the device specified by the user.
@@ -50,8 +49,7 @@ class Head_Pose_Model:
         if self.exec_network.requests[0].wait(-1) == 0:
             #     inference_end_time = time.time()
             #     total_inference_time = inference_end_time - inference_start_time
-            result = self.exec_network.requests[0].outputs[self.output]
-            self.preprocess_output(result)
+            return self.preprocess_output(self.exec_network.requests[0].outputs)
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -78,4 +76,5 @@ class Head_Pose_Model:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        result = self.exec_network.requests[0].outputs[self.output]
+
+        return [outputs['angle_y_fc'][0][0], outputs['angle_p_fc'][0][0], outputs['angle_r_fc'][0][0]]

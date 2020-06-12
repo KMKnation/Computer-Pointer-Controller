@@ -12,13 +12,14 @@ from mouse_controller import MouseController
 import cv2
 import imutils
 
-def imshow(windowname, frame, width=None):
 
+def imshow(windowname, frame, width=None):
     if width == None:
         width = 400
 
     frame = imutils.resize(frame, width=width)
     cv2.imshow(windowname, frame)
+
 
 def build_argparser():
     parser = ArgumentParser()
@@ -53,7 +54,8 @@ def build_argparser():
 
 
 if __name__ == '__main__':
-    arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
+    arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(
+        ' ')
     args = build_argparser().parse_args(arg)
     logger = logging.getLogger()
 
@@ -94,8 +96,6 @@ if __name__ == '__main__':
     head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
     head_model.check_model()
 
-
-
     face_model.load_model()
     logger.info("Face Detection Model Loaded...")
     landmark_model.load_model()
@@ -106,12 +106,11 @@ if __name__ == '__main__':
     logger.info("Head Pose Detection Model Loaded...")
     print('Loaded')
 
-
     frame_count = 0
     for ret, frame in feeder.next_batch():
         if not ret:
             break
-        frame_count +=1
+        frame_count += 1
 
         # if frame_count % 5 == 0:
         #     imshow("video", frame)
@@ -125,10 +124,14 @@ if __name__ == '__main__':
 
         imshow("face", crop_face, width=100)
 
-        (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(crop_face.copy(), eye_surrounding_area=10)
+        (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
+            crop_face.copy(), eye_surrounding_area=10)
         # imshow("left_eye", left_eye, width=100)
         # imshow("right_eye", right_eye, width=100)
+        '''TODO dlib is better to crop eye with perfection'''
 
+        head_positions = head_model.predict(crop_face.copy())
+        print(head_positions)
 
         key = cv2.waitKey(60)
         if key == 27:
