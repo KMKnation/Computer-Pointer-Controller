@@ -130,11 +130,13 @@ if __name__ == '__main__':
         # imshow("right_eye", right_eye, width=100)
         '''TODO dlib is better to crop eye with perfection'''
 
-        head_positions = head_model.predict(crop_face.copy())
-        print(head_positions)
+        head_position = head_model.predict(crop_face.copy())
 
+        gaze, (x, y) = gaze_model.predict(left_eye.copy(), right_eye.copy(), head_position)
+        mc.move(x, y)
         key = cv2.waitKey(60)
         if key == 27:
             break
 
     cv2.destroyAllWindows()
+    feeder.close()

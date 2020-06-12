@@ -6,6 +6,7 @@ This has been provided just to give you an idea of how to structure your model c
 import os
 from openvino.inference_engine import IENetwork, IECore
 import cv2
+import math
 
 
 class Gaze_Estimation_Model:
@@ -28,8 +29,6 @@ class Gaze_Estimation_Model:
         self.input = next(iter(self.network.inputs))
         self.output = next(iter(self.network.outputs))
 
-
-
     def load_model(self):
         '''
         This method is for loading the model to the device specified by the user.
@@ -38,20 +37,24 @@ class Gaze_Estimation_Model:
         self.exec_network = self.core.load_network(self.network, self.device)
         return self.exec_network
 
-    def predict(self, image):
+    def predict(self, left_eye, right_eye, head_position):
         '''
         This method is meant for running predictions on the input image.
         '''
-        processed_frame = self.preprocess_input(image)
+        processed_left_eye = self.preprocess_input(left_eye)
+        processed_right_eye = self.preprocess_input(right_eye)
         # inference_start_time = time.time()
         self.exec_network.start_async(request_id=0,
-                                      inputs={self.input: processed_frame})
+                                      inputs={'left_eye_image': processed_left_eye,
+                                              'right_eye_image': processed_right_eye,
+                                              'head_pose_angles': head_position})
 
         if self.exec_network.requests[0].wait(-1) == 0:
             #     inference_end_time = time.time()
             #     total_inference_time = inference_end_time - inference_start_time
             result = self.exec_network.requests[0].outputs[self.output]
-            self.preprocess_output(result)
+            cords = self.preprocess_output(result[0], head_position)
+            return result, cords
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -66,16 +69,21 @@ class Gaze_Estimation_Model:
         Before feeding the data into the model for inference,
         you might have to preprocess it. This function is where you can do that.
         '''
-        net_input_shape = self.network.inputs[self.input].shape
+        net_input_shape = self.network.inputs['right_eye_image'].shape
         p_frame = cv2.resize(image, (net_input_shape[3], net_input_shape[2]))
         p_frame = p_frame.transpose(2, 0, 1)
         # p_frame = np.expand_dims(p_frame, axis=1)
         p_frame = p_frame.reshape(1, *p_frame.shape)
         return p_frame
 
-    def preprocess_output(self, outputs):
+    def preprocess_output(self, output, head_position):
         '''
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
-        result = self.exec_network.requests[0].outputs[self.output]
+        angle = head_position[2]
+        cosValue = math.cos(angle * math.pi / 180.0)
+        sinValue = math.sin(angle * math.pi / 180.0)
+        x = output[0] * cosValue * output[1] * sinValue
+        y = output[0] * sinValue * output[1] * cosValue
+        return (x, y)
