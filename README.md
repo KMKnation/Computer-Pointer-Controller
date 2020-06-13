@@ -37,7 +37,7 @@ Argument|Type|Description
 - <b>bin</b> folder contains the media files
 - <b>models</b> folder contains pre-trained models from Open Model Zoo
     - intel
-        1. face-detection-adas-binary-0001
+        1. face-detection-adas-0001
         2. gaze-estimation-adas-0002
         3. head-pose-estimation-adas-0001
         4. landmarks-regression-retail-0009
