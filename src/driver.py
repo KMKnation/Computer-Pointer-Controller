@@ -126,10 +126,6 @@ if __name__ == '__main__':
             gaze, (mousex, mousey) = gaze_model.predict(left_eye.copy(), right_eye.copy(), head_position)
             # cv2.waitKey(0)
             # mc.move(mousex, mousey)
-            try:
-                mc.move(gaze[0], gaze[1])
-            except Exception as err:
-                logger.error("Moving cursor outside the PC not supported yet !!")
 
 
             if (len(args.debug) > 0):
@@ -206,12 +202,18 @@ if __name__ == '__main__':
                                 0.35, (255, 255, 255) , 1)
 
                     imshow("face", crop_face, width=400)
+                    cv2.moveWindow("face", 0, 0)  # Move it to (40,30)
                     imshow("debug", debuFrame, width=800)
                     # cv2.waitKey(0)
                     # mc.move(gaze[0],gaze[1])
+            try:
+                mc.move(gaze[0], gaze[1])
+            except Exception as err:
+                logger.error("Moving cursor outside the PC not supported yet !!")
 
-        key = cv2.waitKey(60)
-        if key == 27:
+
+        # key = cv2.waitKey(60)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cv2.destroyAllWindows()
