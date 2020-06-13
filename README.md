@@ -96,7 +96,7 @@ Argument|Type|Description
     Precision: FP32
     ![Precision: FP32](./bin/hp_FP32.png)
 
-- ##### head-pose-estimation-adas-0001
+- ##### landmarks-regression-retail-0009
     Benchmark result on my <b>Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</b>.
         
     Precision: FP16
