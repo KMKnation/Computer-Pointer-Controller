@@ -63,6 +63,20 @@ Argument|Type|Description
 ## Benchmarks
 *TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
 
+###### face-detection-adas-0001
+Benchmark result on my <b>Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</b> using OpenVino Workbench.
+
+Precision: INT8
+![Directory-Structure](./bin/face_int_8.png)
+
+Precision: FP16
+![Directory-Structure](./bin/face_FP16.png)
+
+Precision: FP32
+![Directory-Structure](./bin/face_FP32.png)
+
+
+
 ## Results
 *TODO:* Discuss the benchmark results and explain why you are getting the results you are getting. For instance, explain why there is difference in inference time for FP32, FP16 and INT8 models.
 
