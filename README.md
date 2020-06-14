@@ -14,7 +14,6 @@ Just execute <i>runme.sh</i> and you are good to go !!
 *TODO:* Explain how to run a basic demo of your model.
 
 ## Documentation
-*TODO:* Include any documentation that users might need to better understand your project code. For instance, this is a good place to explain the command line arguments that your project supports.
 
 ###### Command Line Arguments for Running the app
 
