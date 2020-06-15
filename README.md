@@ -11,7 +11,20 @@ Just execute <i>runme.sh</i> and you are good to go !!
     ./runme.sh
 
 ## Demo
-*TODO:* Explain how to run a basic demo of your model.
+
+We have provided three ways to run the application
+1. Static Image JPEG/PNG
+2. Video File
+3. [IP WebCam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=en_US) from Android App
+
+You need to execute following command from the root directory of the project with your configuration.
+    
+    python src/driver.py -f models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i bin/demo.mp4 -it video -d CPU -debug headpose gaze
+
+Please check following video to get more information on "How to run".
+
+[![Demo video](https://i.ytimg.com/vi/7T7SfVGxx7M/hqdefault.jpg)](https://youtu.be/7T7SfVGxx7M)
+
 
 ## Documentation
 
