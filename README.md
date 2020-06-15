@@ -148,7 +148,17 @@ The diffrence in latency and throughput is dependent on CPU architecture like ho
 
 
 ## Stand Out Suggestions
-This is where you can provide information about the stand out suggestions that you have attempted.
+
+- IP Web Cam:
+    
+    We have added one more source of input that is ip-cam. We assume that not all computers are connected through webcam so to get the realtime 
+    feel of the project we have used feed of IP WEB CAM to get the live feed from an android app.
+- Line Profiler:
+    
+    We did analysis of our code to get the idea about which line takes how much time to execute to optimze the code if any non inference related code takes
+    more time than actual inference like pre-processing then using diffrent techniques,
+    
+    Please find the report of line profiler of driver script from [here.](./driver_LineProfiler_Report)
 
 ### Async Inference
 If you have used Async Inference in your code, benchmark the results and explain its effects on power and performance of your project.

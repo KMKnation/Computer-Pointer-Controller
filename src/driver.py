@@ -12,6 +12,11 @@ from mouse_controller import MouseController
 import cv2
 import imutils
 import math
+# import line_profiler
+# profile=line_profiler.LineProfiler()
+# import atexit
+# atexit.register(profile.print_stats)
+
 
 
 def imshow(windowname, frame, width=None):
@@ -48,14 +53,8 @@ def build_argparser():
 
     return parser
 
-
-if __name__ == '__main__':
-    # arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i http://192.168.0.101:8080/shot.jpg -it ip-cam -d CPU -debug headpose gaze'.split(' ')
-
-    args = build_argparser().parse_args()
+# @profile
+def main(args):
     logger = logging.getLogger()
 
     feeder = None
@@ -125,7 +124,7 @@ if __name__ == '__main__':
                     continue
 
                 (lefteye_x, lefteye_y), (
-                righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
+                    righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
                     crop_face.copy(), eye_surrounding_area=15)
                 # imshow("left_eye", left_eye, width=100)
                 # imshow("right_eye", right_eye, width=100)
@@ -214,7 +213,7 @@ if __name__ == '__main__':
                         imshow("face", crop_face, width=400)
                         cv2.moveWindow("face", 0, 0)
                         imshow("debug", debuFrame, width=400)
-                        cv2.moveWindow("debug", cW*2, cH)
+                        cv2.moveWindow("debug", cW * 2, cH)
 
                         # cv2.waitKey(0)
                         # mc.move(gaze[0],gaze[1])
@@ -229,6 +228,16 @@ if __name__ == '__main__':
     except Exception as err:
         logger.error(err)
 
-
     cv2.destroyAllWindows()
     feeder.close()
+
+
+if __name__ == '__main__':
+    # arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
+    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
+    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
+    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i http://192.168.0.101:8080/shot.jpg -it ip-cam -d CPU -debug headpose gaze'.split(' ')
+
+    args = build_argparser().parse_args()
+
+    main(args)
