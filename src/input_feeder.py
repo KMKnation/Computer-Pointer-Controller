@@ -43,7 +43,7 @@ class InputFeeder:
         '''
         global frame, ret
         while True:
-            if self.input_type=='ip=cam':
+            if self.input_type=='ip-cam':
                 img_arr = np.array(bytearray(urllib.request.urlopen(self.input_file).read()), dtype=np.uint8)
                 frame = cv2.imdecode(img_arr, -1)
                 ret = True

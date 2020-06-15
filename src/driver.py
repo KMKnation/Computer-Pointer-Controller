@@ -51,7 +51,10 @@ def build_argparser():
 
 if __name__ == '__main__':
     # arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
-    arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
+    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
+    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
+    arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i http://192.168.0.101:8080/shot.jpg -it ip-cam -d CPU -debug headpose gaze'.split(' ')
+
     args = build_argparser().parse_args(arg)
     logger = logging.getLogger()
 
@@ -102,122 +105,126 @@ if __name__ == '__main__':
     logger.info("Head Pose Detection Model Loaded...")
     print('Loaded')
 
-    frame_count = 0
-    for ret, frame in feeder.next_batch():
-        if not ret:
-            break
-        frame_count += 1
-        crop_face = None
-        if frame_count % 3 == 0:
+    try:
+        frame_count = 0
+        for ret, frame in feeder.next_batch():
+            if not ret:
+                break
+            frame_count += 1
+            crop_face = None
+            if frame_count % 3 == 0:
 
-            crop_face, box = face_model.predict(frame.copy())
+                crop_face, box = face_model.predict(frame.copy())
 
-            if crop_face is None:
-                logger.error("Unable to detect the face.")
-                continue
-
-            (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
-                crop_face.copy(), eye_surrounding_area=15)
-            # imshow("left_eye", left_eye, width=100)
-            # imshow("right_eye", right_eye, width=100)
-            '''TODO dlib is better to crop eye with perfection'''
-
-            head_position = head_model.predict(crop_face.copy())
-
-            gaze, (mousex, mousey) = gaze_model.predict(left_eye.copy(), right_eye.copy(), head_position)
-            # cv2.waitKey(0)
-            # mc.move(mousex, mousey)
-
-
-            if (len(args.debug) > 0):
-                debuFrame = frame.copy()
                 if crop_face is None:
+                    logger.error("Unable to detect the face.")
                     continue
 
-                thickness = 2
-                radius = 2
-                color = (0, 0, 255)
-                [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]] = eye_coords
+                (lefteye_x, lefteye_y), (
+                righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
+                    crop_face.copy(), eye_surrounding_area=15)
+                # imshow("left_eye", left_eye, width=100)
+                # imshow("right_eye", right_eye, width=100)
+                '''TODO dlib is better to crop eye with perfection'''
 
-                '''
-                LandMark
-                '''
+                head_position = head_model.predict(crop_face.copy())
 
-                cv2.circle(crop_face, (lefteye_x, lefteye_y), radius, color, thickness)
-                cv2.circle(crop_face, (righteye_x, righteye_y), radius, color, thickness)
+                gaze, (mousex, mousey) = gaze_model.predict(left_eye.copy(), right_eye.copy(), head_position)
+                # cv2.waitKey(0)
+                # mc.move(mousex, mousey)
 
+                if (len(args.debug) > 0):
+                    debuFrame = frame.copy()
+                    if crop_face is None:
+                        continue
 
-                if 'headpose' in args.debug:
-                    yaw = head_position[0]
-                    pitch = head_position[1]
-                    roll = head_position[2]
+                    thickness = 2
+                    radius = 2
+                    color = (0, 0, 255)
+                    [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]] = eye_coords
 
-                    sinY = math.sin(yaw * math.pi / 180.0)
-                    sinP = math.sin(pitch * math.pi / 180.0)
-                    sinR = math.sin(roll * math.pi / 180.0)
+                    '''
+                    LandMark
+                    '''
 
-                    cosY = math.cos(yaw * math.pi / 180.0)
-                    cosP = math.cos(pitch * math.pi / 180.0)
-                    cosR = math.cos(roll * math.pi / 180.0)
+                    cv2.circle(crop_face, (lefteye_x, lefteye_y), radius, color, thickness)
+                    cv2.circle(crop_face, (righteye_x, righteye_y), radius, color, thickness)
 
-                    cH, cW = crop_face.shape[:2]
-                    arrowLength = 0.4 * cH * cW
+                    if 'headpose' in args.debug:
+                        yaw = head_position[0]
+                        pitch = head_position[1]
+                        roll = head_position[2]
 
-                    xCenter = int(cW / 2)
-                    yCenter = int(cH / 2)
+                        sinY = math.sin(yaw * math.pi / 180.0)
+                        sinP = math.sin(pitch * math.pi / 180.0)
+                        sinR = math.sin(roll * math.pi / 180.0)
 
-                    # center to right
-                    cv2.line(crop_face, (xCenter, yCenter),
-                             (int((xCenter + arrowLength * (cosR * cosY + sinY * sinP * sinR))),
-                              int((yCenter + arrowLength * cosP * sinR))), (186, 204, 2), 1)
+                        cosY = math.cos(yaw * math.pi / 180.0)
+                        cosP = math.cos(pitch * math.pi / 180.0)
+                        cosR = math.cos(roll * math.pi / 180.0)
 
-                    # center to top
-                    cv2.line(crop_face, (xCenter, yCenter),
-                             (int(((xCenter + arrowLength * (cosR * sinY * sinP + cosY * sinR)))),
-                              int((yCenter - arrowLength * cosP * cosR))), (186, 204, 2), 1)
+                        cH, cW = crop_face.shape[:2]
+                        arrowLength = 0.4 * cH * cW
 
-                    # center to forward
-                    cv2.line(crop_face, (xCenter, yCenter),
-                             (int(((xCenter + arrowLength * sinY * cosP))),
-                              int((yCenter + arrowLength * sinP))), (186, 204, 2), 1)
+                        xCenter = int(cW / 2)
+                        yCenter = int(cH / 2)
 
-                    cv2.putText(crop_face, 'head pose: (y={:.2f}, p={:.2f}, r={:.2f})'.format(yaw, pitch, roll), (0,20), cv2.FONT_HERSHEY_SIMPLEX ,
-                                0.35, (255, 255, 255) , 1)
+                        # center to right
+                        cv2.line(crop_face, (xCenter, yCenter),
+                                 (int((xCenter + arrowLength * (cosR * cosY + sinY * sinP * sinR))),
+                                  int((yCenter + arrowLength * cosP * sinR))), (186, 204, 2), 1)
 
+                        # center to top
+                        cv2.line(crop_face, (xCenter, yCenter),
+                                 (int(((xCenter + arrowLength * (cosR * sinY * sinP + cosY * sinR)))),
+                                  int((yCenter - arrowLength * cosP * cosR))), (186, 204, 2), 1)
 
+                        # center to forward
+                        cv2.line(crop_face, (xCenter, yCenter),
+                                 (int(((xCenter + arrowLength * sinY * cosP))),
+                                  int((yCenter + arrowLength * sinP))), (186, 204, 2), 1)
 
-                if 'gaze' in args.debug:
-                    cH, cW = crop_face.shape[:2]
-                    arrowLength = 0.4 * cH * cW
+                        cv2.putText(crop_face, 'head pose: (y={:.2f}, p={:.2f}, r={:.2f})'.format(yaw, pitch, roll),
+                                    (0, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.35, (255, 255, 255), 1)
 
-                    gazeArrowX = gaze[0] * arrowLength
-                    gazeArrowY = -gaze[1] * arrowLength
+                    if 'gaze' in args.debug:
+                        cH, cW = crop_face.shape[:2]
+                        arrowLength = 0.4 * cH * cW
 
-                    cv2.rectangle(crop_face, (re_xmin, re_ymin), (re_xmax, re_ymax), (255, 255, 255))
-                    cv2.rectangle(crop_face, (le_xmin, le_ymin), (le_xmax, le_ymax), (255, 255, 255))
+                        gazeArrowX = gaze[0] * arrowLength
+                        gazeArrowY = -gaze[1] * arrowLength
 
-                    cv2.arrowedLine(crop_face, (lefteye_x, lefteye_y), (int(lefteye_x + gazeArrowX), int(lefteye_y + gazeArrowY)), (184, 113, 57), 2)
-                    cv2.arrowedLine(crop_face, (righteye_x, righteye_y), (int(righteye_x + gazeArrowX), int(righteye_y + gazeArrowY)), (184, 113, 57), 2)
+                        cv2.rectangle(crop_face, (re_xmin, re_ymin), (re_xmax, re_ymax), (255, 255, 255))
+                        cv2.rectangle(crop_face, (le_xmin, le_ymin), (le_xmax, le_ymax), (255, 255, 255))
 
-                    cv2.putText(crop_face, 'gaze angles: h={}, v={}'.format("!", "2"), (0,10), cv2.FONT_HERSHEY_SIMPLEX ,
-                                0.35, (255, 255, 255) , 1)
+                        cv2.arrowedLine(crop_face, (lefteye_x, lefteye_y),
+                                        (int(lefteye_x + gazeArrowX), int(lefteye_y + gazeArrowY)), (184, 113, 57), 2)
+                        cv2.arrowedLine(crop_face, (righteye_x, righteye_y),
+                                        (int(righteye_x + gazeArrowX), int(righteye_y + gazeArrowY)), (184, 113, 57), 2)
 
-                    imshow("face", crop_face, width=400)
-                    cv2.moveWindow("face", 0, 0)
-                    imshow("debug", debuFrame, width=800)
-                    cv2.moveWindow("debug", cW, cH)
+                        cv2.putText(crop_face, 'gaze angles: h={}, v={}'.format("!", "2"), (0, 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.35, (255, 255, 255), 1)
 
-                    # cv2.waitKey(0)
-                    # mc.move(gaze[0],gaze[1])
-            try:
-                mc.move(gaze[0], gaze[1])
-            except Exception as err:
-                logger.error("Moving cursor outside the PC not supported yet !!")
+                        imshow("face", crop_face, width=400)
+                        cv2.moveWindow("face", 0, 0)
+                        imshow("debug", debuFrame, width=800)
+                        cv2.moveWindow("debug", cW, cH)
 
+                        # cv2.waitKey(0)
+                        # mc.move(gaze[0],gaze[1])
+                try:
+                    mc.move(gaze[0], gaze[1])
+                except Exception as err:
+                    logger.error("Moving cursor outside the PC not supported yet !!")
 
-        # key = cv2.waitKey(60)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            # key = cv2.waitKey(60)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    except Exception as err:
+        logger.error(err)
+
 
     cv2.destroyAllWindows()
     feeder.close()
