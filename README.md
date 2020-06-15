@@ -75,6 +75,9 @@ Argument|Type|Description
 ## Benchmarks
 *TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
 
+
+## Results
+
 - ##### face-detection-adas-0001
     Benchmark result on my <b>Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</b> using OpenVino Workbench.
     
@@ -86,6 +89,12 @@ Argument|Type|Description
     
     Precision: FP32
     ![Precision: FP32](./bin/face_FP32.png)
+  
+  <b>Comment:</b> Comparing the above benchmarks, We can see that INT8 model is very slow in terms of
+  throughput and latency compared to FP16 and FP32. The above benchmarks ran on the batch of 100 auto-generated images. Hence 
+  the accuracy comparison is not available.
+  
+  The best precision model should be the one who has higher throughput which is FP16 in this case.
 
 - ##### gaze-estimation-adas-0002
     Benchmark result on my <b>Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</b>.
@@ -98,6 +107,11 @@ Argument|Type|Description
     
     Precision: FP32
     ![Precision: FP32](./bin/gaze_FP32.png)
+   
+   <b>Comment:</b> Here in gaze estimation, We have lower performance on FP16 precision because of higher latency and lower throughput 
+   in compared to other models.
+   
+   The best precision model should be INT8 which has lower latency and higher throughput.
 
 - ##### head-pose-estimation-adas-0001
     Benchmark result on my <b>Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</b>.
@@ -107,6 +121,10 @@ Argument|Type|Description
     
     Precision: FP32
     ![Precision: FP32](./bin/hp_FP32.png)
+    
+    <b>Comment:</b> The both model performance is quite simillar in terms of latency but based on throughput
+    FP16 works well compared to FP32.
+   
 
 - ##### landmarks-regression-retail-0009
     Benchmark result on my <b>Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</b>.
@@ -117,10 +135,17 @@ Argument|Type|Description
     Precision: FP32
     ![Precision: FP32](./bin/landmark_FP32.png)
 
+    <b>Comment:</b> Same goes here also. The both model performance is quite simillar in terms of latency but based on throughput
+    FP16 works well compared to FP32.
 
+The main reason behind the diffrences of latency, throughput and accuracy is because of the floating point convertion.
 
-## Results
-*TODO:* Discuss the benchmark results and explain why you are getting the results you are getting. For instance, explain why there is difference in inference time for FP32, FP16 and INT8 models.
+Converting the higher precisions model to lower one loose some information which leads to loose in some amount of accuracy.
+
+Example: 1.223154 (FP16) has 0.2223154 valuable information but converting it to (INT8), it looses that information and becomes 1.
+
+The diffrence in latency and throughput is dependent on CPU architecture like how many Floating Point Operations the CPU can able to process in one cycle.
+
 
 ## Stand Out Suggestions
 This is where you can provide information about the stand out suggestions that you have attempted.
