@@ -58,6 +58,6 @@ class InputFeeder:
         '''
         Closes the VideoCapture.
         '''
-        if not self.input_type=='image':
+        if not self.input_type=='image' and  not self.input_type=='ip-cam':
             self.cap.release()
 
