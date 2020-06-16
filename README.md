@@ -45,7 +45,7 @@ Argument|Type|Description
 -it| Mandatory | Provide the source of video frames.
 -debug  | Optional | To debug each model's output visually, type the model name with comma seperated after --debug
 -ld | Optional | linker libraries if have any
--d | Optional | Provide the target device: 
+-d | Optional | Provide the target device: CPU / GPU / MYRIAD / FPGA
 
 ###### Directory Structure
 
