@@ -6,7 +6,10 @@ The project's main aim is to check usage of OpenVino ToolKit on different hardwa
 which includes openvino inference API, OpenVino WorkBench and VTune Profiler.
 
 ## Project Set Up and Installation
-Just execute <i>runme.sh</i> and you are good to go !!
+
+Download [Open Vino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
+
+Just execute <i>runme.sh</i> from working directory to install prerequisites and you are good to go !!
 
     ./runme.sh
 
@@ -49,7 +52,7 @@ Argument|Type|Description
 - <b>bin</b> folder contains the media files
 - <b>models</b> folder contains pre-trained models from Open Model Zoo
     - intel
-        1. face-detection-adas-0001
+        1. face-detection-adas-binary-0001
         2. gaze-estimation-adas-0002
         3. head-pose-estimation-adas-0001
         4. landmarks-regression-retail-0009
@@ -79,6 +82,14 @@ Precision| Inference Time | FPS | Model Loading Time
 INT8 |![Inference: INT8](./bin/devcloud/inference_INT8.png) | ![FPS: INT8](./bin/devcloud/FPS_INT8.png) | ![Inference: INT8](./bin/devcloud/loading_time_INT8.png)
 FP16 |![Inference: FP16](./bin/devcloud/inference_FP16.png) | ![FPS: FP16](./bin/devcloud/FPS_FP16.png) | ![Inference: FP16](./bin/devcloud/loading_time_FP16.png)
 FP32 |![Inference: FP32](./bin/devcloud/inference_FP32.png) | ![FPS: FP32](./bin/devcloud/FPS_FP32.png) | ![Inference: FP32](./bin/devcloud/loading_time_FP32.png)
+
+Comment: 
+1. Comparing the above graph we can say that FPGA works very slow as it is taking high inference time and low FPS.
+2. Intel Atom x7-E3950 UP2 GPU takes so much time to load the model compared to others
+3. Intel Core i5-6500TE GPU provides faster inference & FPS in all precisions.
+4. Howerver Model Loading Time for Intel Core i5-6500TE GPU is quite high compared to Intel Core i5-6500TE CPU
+5. Intel Core i5-6500TE CPU also provides simillar performance like 65000TE GPU with merly decrease in FPS and increase in Inference Time.
+6. So 1st priority is to run the application on Intel Core i5-6500TE GPU and then if its not in budget then running on CPU (Intel Xeon E3-1268L v5 & Intel Core i5-6500TE) works well with some lose in FPS and Inference Speed,
 
 ## Results
 
