@@ -7,7 +7,7 @@ which includes openvino inference API, OpenVino WorkBench and VTune Profiler.
 
 ## Project Set Up and Installation
 
-Download [Open Vino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
+Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
 
 Just execute <i>runme.sh</i> from working directory to install prerequisites and you are good to go !!
 
