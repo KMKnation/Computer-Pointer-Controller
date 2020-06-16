@@ -7,13 +7,26 @@ which includes openvino inference API, OpenVino WorkBench and VTune Profiler.
 
 ## Project Set Up and Installation
 
-Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
+1. Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
 
-Clone the repository from this URL: https://github.com/KMKnation/Computer-Pointer-Controller.git
+2. Clone the repository from this URL: https://github.com/KMKnation/Computer-Pointer-Controller.git
 
-Just execute <i>runme.sh</i> from working directory to install prerequisites and you are good to go !!
+3. Create Virtual Enviorment in working directory.
 
-    ./runme.sh
+        cd Computer-Pointer-Controller
+        python3 -m venv venv
+
+4. Activate Virtual Enviorment
+        
+        source venv/bin/activate
+
+5. Load the OpenVino Variables from installed directory of OpenVino
+
+        source {INSTALLED_OPENVINO_DIR}/bin/setupvars.sh 
+            
+6. Just execute <i>runme.sh</i> from working directory to install prerequisites and you are good to go !!
+
+        ./runme.sh
 
 ## Demo
 
