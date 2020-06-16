@@ -9,6 +9,8 @@ which includes openvino inference API, OpenVino WorkBench and VTune Profiler.
 
 Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
 
+Clone the repository from this URL: https://github.com/KMKnation/Computer-Pointer-Controller.git
+
 Just execute <i>runme.sh</i> from working directory to install prerequisites and you are good to go !!
 
     ./runme.sh
