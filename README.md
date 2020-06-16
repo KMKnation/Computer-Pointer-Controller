@@ -73,8 +73,12 @@ Argument|Type|Description
 
 
 ## Benchmarks
-*TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
 
+Precision| Inference Time | FPS | Model Loading Time
+| ------------- | ------------- | ------------- | -------------
+INT8 |![Inference: INT8](./bin/devcloud/inference_INT8.png) | ![FPS: INT8](./bin/devcloud/FPS_INT8.png) | ![Inference: INT8](./bin/devcloud/loading_time_INT8.png)
+FP16 |![Inference: FP16](./bin/devcloud/inference_FP16.png) | ![FPS: FP16](./bin/devcloud/FPS_FP16.png) | ![Inference: FP16](./bin/devcloud/loading_time_FP16.png)
+FP32 |![Inference: FP32](./bin/devcloud/inference_FP32.png) | ![FPS: FP32](./bin/devcloud/FPS_FP32.png) | ![Inference: FP32](./bin/devcloud/loading_time_FP32.png)
 
 ## Results
 
@@ -142,7 +146,7 @@ The main reason behind the diffrences of latency, throughput and accuracy is bec
 
 Converting the higher precisions model to lower one loose some information which leads to loose in some amount of accuracy.
 
-Example: 1.223154 (FP16) has 0.2223154 valuable information but converting it to (INT8), it looses that information and becomes 1.
+For Example: 1.223154 (FP16) has 0.2223154 valuable information but converting it to (INT8), it looses that information and becomes 1.
 
 The diffrence in latency and throughput is dependent on CPU architecture like how many Floating Point Operations the CPU can able to process in one cycle.
 
@@ -161,7 +165,13 @@ The diffrence in latency and throughput is dependent on CPU architecture like ho
     Please find the report of line profiler of driver script from [here.](./driver_LineProfiler_Report)
 
 ### Async Inference
-If you have used Async Inference in your code, benchmark the results and explain its effects on power and performance of your project.
+We used the start_async method but in next line wait(-1) as well so it behaves like sync or infer method.
+
+We know using async will user the all cores of my CPU and improves the performance of app using threading compared to normal infer method.
+
 
 ### Edge Cases
-There will be certain situations that will break your inference flow. For instance, lighting changes or multiple people in the frame. Explain some of the edge cases you encountered in your project and how you solved them to make your project more robust.
+1. Moving Mouse Pointer out of the maximum window width
+2. Face Not Found
+3. Multiple Faces (Right now chose the biggest area one as it would be a nearer to webcam in general)
+4. Wrong Video/Image file given
