@@ -115,7 +115,7 @@ def main(args):
 
             frame_count += 1
             crop_face = None
-            if frame_count % 3 == 0:
+            if frame_count % 3 ==0:
 
                 crop_face, box = face_model.predict(frame.copy())
 
