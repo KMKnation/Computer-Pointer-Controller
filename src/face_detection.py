@@ -44,7 +44,6 @@ class Face_Model:
         # inference_start_time = time.time()
         self.exec_network.start_async(request_id=0,
                                       inputs={self.input: processed_frame})
-
         if self.exec_network.requests[0].wait(-1) == 0:
             #     inference_end_time = time.time()
             #     total_inference_time = inference_end_time - inference_start_time
@@ -61,6 +60,8 @@ class Face_Model:
             x_min, y_min, x_max, y_max = box
             cropped_face = image[y_min:y_max, x_min:x_max]
             return cropped_face, box
+        else:
+            return None, None
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
