@@ -85,23 +85,23 @@ def main(args):
     face_model = Face_Model(args.face, args.device, args.cpu_extension)
     face_model.check_model()
 
-    landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
-    landmark_model.check_model()
-
-    gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
-    gaze_model.check_model()
-
-    head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
-    head_model.check_model()
+    # landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
+    # landmark_model.check_model()
+    #
+    # gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
+    # gaze_model.check_model()
+    #
+    # head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
+    # head_model.check_model()
 
     face_model.load_model()
     logger.info("Face Detection Model Loaded...")
-    landmark_model.load_model()
-    logger.info("Landmark Detection Model Loaded...")
-    gaze_model.load_model()
-    logger.info("Gaze Estimation Model Loaded...")
-    head_model.load_model()
-    logger.info("Head Pose Detection Model Loaded...")
+    # landmark_model.load_model()
+    # logger.info("Landmark Detection Model Loaded...")
+    # gaze_model.load_model()
+    # logger.info("Gaze Estimation Model Loaded...")
+    # head_model.load_model()
+    # logger.info("Head Pose Detection Model Loaded...")
     print('Loaded')
 
     try:
@@ -119,8 +119,15 @@ def main(args):
 
                 crop_face, box = face_model.predict(frame.copy())
 
+
                 if crop_face is None:
                     logger.error("Unable to detect the face.")
+                    continue
+                imshow('frame', crop_face, width=400)
+
+                if True:
+                    if cv2.waitKey(20) & 0xFF == ord('q'):
+                        break
                     continue
 
                 (lefteye_x, lefteye_y), (
