@@ -60,13 +60,13 @@ def main(args):
     feeder = None
     if args.input_type == constants.VIDEO or args.input_type == constants.IMAGE:
         extension = str(args.input).split('.')[1]
-        if not extension.lower() in constants.ALLOWED_EXTENSIONS:
-            logger.error('Please provide supported extension.' + str(constants.ALLOWED_EXTENSIONS))
-            exit(1)
+        # if not extension.lower() in constants.ALLOWED_EXTENSIONS:
+        #     logger.error('Please provide supported extension.' + str(constants.ALLOWED_EXTENSIONS))
+        #     exit(1)
 
-        if not os.path.isfile(args.input):
-            logger.error("Unable to find specified video/image file")
-            exit(1)
+        # if not os.path.isfile(args.input):
+        #     logger.error("Unable to find specified video/image file")
+        #     exit(1)
 
         feeder = InputFeeder(args.input_type, args.input)
     elif args.input_type == constants.IP_CAMERA:
@@ -85,23 +85,23 @@ def main(args):
     face_model = Face_Model(args.face, args.device, args.cpu_extension)
     face_model.check_model()
 
-    landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
-    landmark_model.check_model()
-
-    gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
-    gaze_model.check_model()
-
-    head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
-    head_model.check_model()
+    # landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
+    # landmark_model.check_model()
+    #
+    # gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
+    # gaze_model.check_model()
+    #
+    # head_model = Head_Pose_Model(args.headpose, args.device, args.cpu_extension)
+    # head_model.check_model()
 
     face_model.load_model()
     logger.info("Face Detection Model Loaded...")
-    landmark_model.load_model()
-    logger.info("Landmark Detection Model Loaded...")
-    gaze_model.load_model()
-    logger.info("Gaze Estimation Model Loaded...")
-    head_model.load_model()
-    logger.info("Head Pose Detection Model Loaded...")
+    # landmark_model.load_model()
+    # logger.info("Landmark Detection Model Loaded...")
+    # gaze_model.load_model()
+    # logger.info("Gaze Estimation Model Loaded...")
+    # head_model.load_model()
+    # logger.info("Head Pose Detection Model Loaded...")
     print('Loaded')
 
     try:
@@ -115,12 +115,19 @@ def main(args):
 
             frame_count += 1
             crop_face = None
-            if frame_count % 3 ==0:
+            if True:
 
                 crop_face, box = face_model.predict(frame.copy())
 
+
                 if crop_face is None:
                     logger.error("Unable to detect the face.")
+                    continue
+                imshow('frame', crop_face, width=400)
+
+                if True:
+                    if cv2.waitKey(20) & 0xFF == ord('q'):
+                        break
                     continue
 
                 (lefteye_x, lefteye_y), (
@@ -133,8 +140,6 @@ def main(args):
                 head_position = head_model.predict(crop_face.copy())
 
                 gaze, (mousex, mousey) = gaze_model.predict(left_eye.copy(), right_eye.copy(), head_position)
-                # cv2.waitKey(0)
-                # mc.move(mousex, mousey)
 
                 if (len(args.debug) > 0):
                     debuFrame = frame.copy()
@@ -146,12 +151,22 @@ def main(args):
                     color = (0, 0, 255)
                     [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]] = eye_coords
 
+                    if 'face' in args.debug:
+                            cv2.rectangle(debuFrame, (box[0], box[1]), (box[2], box[3]), (255, 255, 255), 2)
+
+
+                            cv2.rectangle(crop_face, (re_xmin, re_ymin), (re_xmax, re_ymax), (100, 255, 100), 2)
+                            cv2.rectangle(crop_face, (le_xmin, le_ymin), (le_xmax, le_ymax), (100, 255, 100), 2)
+
                     '''
                     LandMark
                     '''
 
                     cv2.circle(crop_face, (lefteye_x, lefteye_y), radius, color, thickness)
                     cv2.circle(crop_face, (righteye_x, righteye_y), radius, color, thickness)
+
+                    debuFrame[box[1]:box[3], box[0]:box[2]] = crop_face
+
 
                     if 'headpose' in args.debug:
                         yaw = head_position[0]
@@ -173,33 +188,33 @@ def main(args):
                         yCenter = int(cH / 2)
 
                         # center to right
-                        cv2.line(crop_face, (xCenter, yCenter),
-                                 (int((xCenter + arrowLength * (cosR * cosY + sinY * sinP * sinR))),
-                                  int((yCenter + arrowLength * cosP * sinR))), (186, 204, 2), 1)
-
-                        # center to top
-                        cv2.line(crop_face, (xCenter, yCenter),
-                                 (int(((xCenter + arrowLength * (cosR * sinY * sinP + cosY * sinR)))),
-                                  int((yCenter - arrowLength * cosP * cosR))), (186, 204, 2), 1)
-
-                        # center to forward
-                        cv2.line(crop_face, (xCenter, yCenter),
-                                 (int(((xCenter + arrowLength * sinY * cosP))),
-                                  int((yCenter + arrowLength * sinP))), (186, 204, 2), 1)
-
+                        # cv2.line(crop_face, (xCenter, yCenter),
+                        #          (int((xCenter + arrowLength * (cosR * cosY + sinY * sinP * sinR))),
+                        #           int((yCenter + arrowLength * cosP * sinR))), (186, 204, 2), 1)
+            #
+            #             # center to top
+            #             cv2.line(crop_face, (xCenter, yCenter),
+            #                      (int(((xCenter + arrowLength * (cosR * sinY * sinP + cosY * sinR)))),
+            #                       int((yCenter - arrowLength * cosP * cosR))), (186, 204, 2), 1)
+            #
+            #             # center to forward
+            #             cv2.line(crop_face, (xCenter, yCenter),
+            #                      (int(((xCenter + arrowLength * sinY * cosP))),
+            #                       int((yCenter + arrowLength * sinP))), (186, 204, 2), 1)
+            #
                         cv2.putText(crop_face, 'head pose: (y={:.2f}, p={:.2f}, r={:.2f})'.format(yaw, pitch, roll),
                                     (0, 20), cv2.FONT_HERSHEY_SIMPLEX,
                                     0.35, (255, 255, 255), 1)
 
+
                     if 'gaze' in args.debug:
                         cH, cW = crop_face.shape[:2]
-                        arrowLength = 0.4 * cH * cW
+                        arrowLength = 0.6 * cH
 
                         gazeArrowX = gaze[0] * arrowLength
                         gazeArrowY = -gaze[1] * arrowLength
 
-                        cv2.rectangle(crop_face, (re_xmin, re_ymin), (re_xmax, re_ymax), (255, 255, 255))
-                        cv2.rectangle(crop_face, (le_xmin, le_ymin), (le_xmax, le_ymax), (255, 255, 255))
+                        debuFrame[box[1]:box[3], box[0]:box[2]] = crop_face
 
                         cv2.arrowedLine(crop_face, (lefteye_x, lefteye_y),
                                         (int(lefteye_x + gazeArrowX), int(lefteye_y + gazeArrowY)), (184, 113, 57), 2)
@@ -210,20 +225,24 @@ def main(args):
                                     cv2.FONT_HERSHEY_SIMPLEX,
                                     0.35, (255, 255, 255), 1)
 
-                        imshow("face", crop_face, width=400)
-                        cv2.moveWindow("face", 0, 0)
-                        imshow("debug", debuFrame, width=400)
-                        cv2.moveWindow("debug", cW * 2, cH)
+                        debuFrame[box[1]:box[3], box[0]:box[2]] = crop_face
 
-                        # cv2.waitKey(0)
-                        # mc.move(gaze[0],gaze[1])
-                try:
-                    mc.move(gaze[0], gaze[1])
-                except Exception as err:
-                    logger.error("Moving cursor outside the PC not supported yet !!")
+            #
+            #             imshow("face", crop_face, width=400)
+            #             cv2.moveWindow("face", 0, 0)
+            #             imshow("debug", debuFrame, width=400)
+            #             cv2.moveWindow("debug", cW * 2, cH)
+
+                # try:
+                #     if frame_count % 5 == 0:
+                #         mc.move(mousex, mousey)
+                # except Exception as err:
+                #     logger.error("Moving cursor outside the PC not supported yet !!")
 
             # key = cv2.waitKey(60)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+                    imshow('frame', debuFrame, width=1210)
+
+            if cv2.waitKey(20) & 0xFF == ord('q'):
                 break
     except Exception as err:
         logger.error(err)
@@ -233,11 +252,8 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i http://192.168.0.101:8080/shot.jpg -it ip-cam -d CPU -debug headpose gaze'.split(' ')
-
+    arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze face'.split(' ')
+    # args = build_argparser().parse_args(arg)
     args = build_argparser().parse_args()
 
     main(args)

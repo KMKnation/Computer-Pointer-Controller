@@ -21,6 +21,7 @@ class Face_Model:
         self.output = None
         self.exec_network = None
         self.device = device
+        self.request_id = 0
 
         self.core = IECore()
         self.network = self.core.read_network(model=str(model_name),
@@ -42,24 +43,14 @@ class Face_Model:
         '''
         processed_frame = self.preprocess_input(image)
         # inference_start_time = time.time()
-        self.exec_network.start_async(request_id=0,
+        self.exec_network.start_async(request_id=self.request_id,
                                       inputs={self.input: processed_frame})
-        if self.exec_network.requests[0].wait(-1) == 0:
-            #     inference_end_time = time.time()
-            #     total_inference_time = inference_end_time - inference_start_time
+        self.exec_network.requests[self.request_id].wait()
+
+        if self.exec_network.requests[self.request_id].wait(0) == 0:
+
             result = self.exec_network.requests[0].outputs[self.output]
-            box = self.preprocess_output(result[0][0])
-
-            if box is None:
-                return None, None
-
-            h = image.shape[0]
-            w = image.shape[1]
-            box = box * np.array([w, h, w, h])
-            box = box.astype(np.int32)
-            x_min, y_min, x_max, y_max = box
-            cropped_face = image[y_min:y_max, x_min:x_max]
-            return cropped_face, box
+            cropface, box = self.preprocess_output(result[0][0], image)
         else:
             return None, None
 
@@ -83,7 +74,7 @@ class Face_Model:
         p_frame = p_frame.reshape(1, *p_frame.shape)
         return p_frame
 
-    def preprocess_output(self, outputs):
+    def preprocess_output(self, outputs, image):
         '''
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
@@ -100,6 +91,15 @@ class Face_Model:
         # get biggest face from detected because whoever is the close to the screen, his/her's face would be big
 
         if len(area) > 0:
-            return cords[int(np.argmax(area))]
+            box =  cords[int(np.argmax(area))]
+            if box is None:
+                return None, None
+
+            h, w = image.shape[0:2]
+            box = box * np.array([w, h, w, h])
+            box = box.astype(np.int32)
+            x_min, y_min, x_max, y_max = box
+            cropped_face = image[y_min:y_max, x_min:x_max]
+            return cropped_face, box
         else:
-            return None
+            return None, None

@@ -36,6 +36,7 @@ class InputFeeder:
         else:
             self.cap=cv2.imread(self.input_file)
 
+
     def next_batch(self):
         '''
         Returns the next image from either a video file or webcam.
@@ -49,8 +50,8 @@ class InputFeeder:
                 ret = True
                 # cv2.imshow('IPWebcam', img)
             else:
-                for _ in range(10):
-                    ret, frame=self.cap.read()
+                # for _ in range(10):
+                ret, frame=self.cap.read()
             yield ret, frame
 
 
