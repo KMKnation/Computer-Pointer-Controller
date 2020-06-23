@@ -9,7 +9,7 @@ which includes openvino inference API, OpenVino WorkBench and VTune Profiler.
 
 1. Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
 
-2. Clone the repository from this URL: https://github.com/KMKnation/Computer-Pointer-Controller.git
+2. Clone the repository from this URL: https://github.com/KMKnation/Computer-Pointer-Controller/tree/1.0.0
 
 3. Create Virtual Enviorment in working directory.
 

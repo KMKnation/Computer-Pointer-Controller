@@ -19,6 +19,7 @@ class Face_Model:
         self.network = None
         self.input = None
         self.output = None
+        self.mode = 'async'
         self.exec_network = None
         self.device = device
         self.request_id = 0
@@ -45,14 +46,17 @@ class Face_Model:
         # inference_start_time = time.time()
         self.exec_network.start_async(request_id=self.request_id,
                                       inputs={self.input: processed_frame})
-        self.exec_network.requests[self.request_id].wait()
 
-        if self.exec_network.requests[self.request_id].wait(0) == 0:
-
-            result = self.exec_network.requests[0].outputs[self.output]
+        if self.mode == 'async':
+            self.exec_network.requests[self.request_id].wait()
+            result = self.exec_network.requests[self.request_id].outputs[self.output]
             cropface, box = self.preprocess_output(result[0][0], image)
+            return cropface, box
         else:
-            return None, None
+            if self.exec_network.requests[self.request_id].wait(-1) == 0:
+                result = self.exec_network.requests[self.request_id].outputs[self.output]
+                cropface, box = self.preprocess_output(result[0][0], image)
+                return cropface, box
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -91,7 +95,7 @@ class Face_Model:
         # get biggest face from detected because whoever is the close to the screen, his/her's face would be big
 
         if len(area) > 0:
-            box =  cords[int(np.argmax(area))]
+            box = cords[int(np.argmax(area))]
             if box is None:
                 return None, None
 
