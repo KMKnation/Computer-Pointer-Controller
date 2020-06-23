@@ -64,9 +64,9 @@ def main(args):
         #     logger.error('Please provide supported extension.' + str(constants.ALLOWED_EXTENSIONS))
         #     exit(1)
 
-        if not os.path.isfile(args.input):
-            logger.error("Unable to find specified video/image file")
-            exit(1)
+        # if not os.path.isfile(args.input):
+        #     logger.error("Unable to find specified video/image file")
+        #     exit(1)
 
         feeder = InputFeeder(args.input_type, args.input)
     elif args.input_type == constants.IP_CAMERA:
@@ -252,11 +252,8 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # arg = '-f ../models/intel/face-detection-adas-binary-0001/INT1/face-detection-adas-binary-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze'.split(' ')
     arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU -debug headpose gaze face'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i ../bin/demo.mp4 -it video -d CPU'.split(' ')
-    # arg = '-f ../models/intel/face-detection-adas-0001/FP16/face-detection-adas-0001.xml -l ../models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009.xml -hp ../models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001.xml -ge ../models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002.xml -i http://192.168.0.101:8080/shot.jpg -it ip-cam -d CPU -debug headpose gaze'.split(' ')
-
-    args = build_argparser().parse_args(arg)
+    # args = build_argparser().parse_args(arg)
+    args = build_argparser().parse_args()
 
     main(args)
