@@ -85,8 +85,8 @@ def main(args):
     face_model = Face_Model(args.face, args.device, args.cpu_extension)
     face_model.check_model()
 
-    # landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
-    # landmark_model.check_model()
+    landmark_model = Landmark_Model(args.landmarks, args.device, args.cpu_extension)
+    landmark_model.check_model()
     #
     # gaze_model = Gaze_Estimation_Model(args.gazeestimation, args.device, args.cpu_extension)
     # gaze_model.check_model()
@@ -96,8 +96,8 @@ def main(args):
 
     face_model.load_model()
     logger.info("Face Detection Model Loaded...")
-    # landmark_model.load_model()
-    # logger.info("Landmark Detection Model Loaded...")
+    landmark_model.load_model()
+    logger.info("Landmark Detection Model Loaded...")
     # gaze_model.load_model()
     # logger.info("Gaze Estimation Model Loaded...")
     # head_model.load_model()
@@ -125,14 +125,14 @@ def main(args):
                     continue
                 imshow('frame', crop_face, width=400)
 
+                (lefteye_x, lefteye_y), (
+                    righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
+                    crop_face.copy(), eye_surrounding_area=15)
+
                 if True:
                     if cv2.waitKey(20) & 0xFF == ord('q'):
                         break
                     continue
-
-                (lefteye_x, lefteye_y), (
-                    righteye_x, righteye_y), eye_coords, left_eye, right_eye = landmark_model.predict(
-                    crop_face.copy(), eye_surrounding_area=15)
                 # imshow("left_eye", left_eye, width=100)
                 # imshow("right_eye", right_eye, width=100)
                 '''TODO dlib is better to crop eye with perfection'''
