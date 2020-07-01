@@ -19,6 +19,7 @@ class Landmark_Model:
         self.network = None
         self.input = None
         self.output = None
+        self.mode = 'async'
         self.exec_network = None
         self.device = device
 
@@ -41,39 +42,23 @@ class Landmark_Model:
         '''
         This method is meant for running predictions on the input image.
         '''
+
         processed_frame = self.preprocess_input(image)
-        # inference_start_time = time.time()
         self.exec_network.start_async(request_id=0,
                                       inputs={self.input: processed_frame})
-
-        if self.exec_network.requests[0].wait(-1) == 0:
-            #     inference_end_time = time.time()
-            #     total_inference_time = inference_end_time - inference_start_time
+        if self.mode == 'async':
+            self.exec_network.requests[0].wait()
             result = self.exec_network.requests[0].outputs[self.output]
-            box = self.preprocess_output(result)
-            h, w = image.shape[0:2]
-            # w = image.shape[1]
-            box = box * np.array([w, h, w, h])
-            box = box.astype(np.int32)
+            return self.preprocess_output(result, image, eye_surrounding_area)
 
-            (lefteye_x, lefteye_y, righteye_x, righteye_y) = box
-            # cv2.rectangle(image,(lefteye_x,lefteye_y),(righteye_x,righteye_y),(255,0,0))
+        else:
 
-            le_xmin = lefteye_x - eye_surrounding_area
-            le_ymin = lefteye_y - eye_surrounding_area
-            le_xmax = lefteye_x + eye_surrounding_area
-            le_ymax = lefteye_y + eye_surrounding_area
-
-            re_xmin = righteye_x - eye_surrounding_area
-            re_ymin = righteye_y - eye_surrounding_area
-            re_xmax = righteye_x + eye_surrounding_area
-            re_ymax = righteye_y + eye_surrounding_area
-
-            left_eye = image[le_ymin:le_ymax, le_xmin:le_xmax]
-            right_eye = image[re_ymin:re_ymax, re_xmin:re_xmax]
-            eye_coords = [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]]
-
-            return (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye
+            # inference_start_time = time.time()
+            if self.exec_network.requests[0].wait(-1) == 0:
+                #     inference_end_time = time.time()
+                #     total_inference_time = inference_end_time - inference_start_time
+                result = self.exec_network.requests[0].outputs[self.output]
+                return self.preprocess_output(result, image, eye_surrounding_area)
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
@@ -95,7 +80,7 @@ class Landmark_Model:
         p_frame = p_frame.reshape(1, *p_frame.shape)
         return p_frame
 
-    def preprocess_output(self, outputs):
+    def preprocess_output(self, outputs, image, eye_surrounding_area):
         '''
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
@@ -105,4 +90,28 @@ class Landmark_Model:
         reye_x = outputs[0][2].tolist()[0][0]
         reye_y = outputs[0][3].tolist()[0][0]
 
-        return (leye_x, leye_y, reye_x, reye_y)
+        box = (leye_x, leye_y, reye_x, reye_y)
+
+        h, w = image.shape[0:2]
+        # w = image.shape[1]
+        box = box * np.array([w, h, w, h])
+        box = box.astype(np.int32)
+
+        (lefteye_x, lefteye_y, righteye_x, righteye_y) = box
+        # cv2.rectangle(image,(lefteye_x,lefteye_y),(righteye_x,righteye_y),(255,0,0))
+
+        le_xmin = lefteye_x - eye_surrounding_area
+        le_ymin = lefteye_y - eye_surrounding_area
+        le_xmax = lefteye_x + eye_surrounding_area
+        le_ymax = lefteye_y + eye_surrounding_area
+
+        re_xmin = righteye_x - eye_surrounding_area
+        re_ymin = righteye_y - eye_surrounding_area
+        re_xmax = righteye_x + eye_surrounding_area
+        re_ymax = righteye_y + eye_surrounding_area
+
+        left_eye = image[le_ymin:le_ymax, le_xmin:le_xmax]
+        right_eye = image[re_ymin:re_ymax, re_xmin:re_xmax]
+        eye_coords = [[le_xmin, le_ymin, le_xmax, le_ymax], [re_xmin, re_ymin, re_xmax, re_ymax]]
+
+        return (lefteye_x, lefteye_y), (righteye_x, righteye_y), eye_coords, left_eye, right_eye
