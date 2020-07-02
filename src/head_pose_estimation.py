@@ -22,7 +22,7 @@ class Head_Pose_Model:
         self.exec_network = None
         self.device = device
         self.core = IECore()
-
+        self.mode = 'async'
         self.network = self.core.read_network(model=str(model_name),
                                               weights=str(os.path.splitext(model_name)[0] + ".bin"))
 
@@ -44,13 +44,18 @@ class Head_Pose_Model:
         '''
         processed_frame = self.preprocess_input(image)
         # inference_start_time = time.time()
+
         self.exec_network.start_async(request_id=0,
                                       inputs={self.input: processed_frame})
 
-        if self.exec_network.requests[0].wait(-1) == 0:
-            #     inference_end_time = time.time()
-            #     total_inference_time = inference_end_time - inference_start_time
+        if self.mode == 'async':
+            self.exec_network.requests[0].wait()
             return self.preprocess_output(self.exec_network.requests[0].outputs)
+        else:
+            if self.exec_network.requests[0].wait(-1) == 0:
+                #     inference_end_time = time.time()
+                #     total_inference_time = inference_end_time - inference_start_time
+                return self.preprocess_output(self.exec_network.requests[0].outputs)
 
     def check_model(self):
         supported_layers = self.core.query_network(network=self.network, device_name=self.device)
